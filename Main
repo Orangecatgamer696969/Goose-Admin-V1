@@ -1,0 +1,1207 @@
+local GoosesAwesomeAdmin = {}
+
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local TeleportService = game:GetService("TeleportService")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+
+local MainUI = Instance.new("ScreenGui")
+MainUI.Name = "GoosesAwesomeAdmin"
+MainUI.ResetOnSpawn = false
+MainUI.DisplayOrder = 999
+MainUI.Parent = game:GetService("CoreGui")
+
+local UIKeybind = Enum.KeyCode.LeftControl
+local ShowNotifications = true
+local IsDraggable = false
+local UITheme = {
+    Background = Color3.fromRGB(20, 20, 20),
+    Secondary = Color3.fromRGB(30, 30, 30),
+    Accent = Color3.fromRGB(40, 40, 40),
+    TextPrimary = Color3.fromRGB(255, 255, 255),
+    TextSecondary = Color3.fromRGB(200, 200, 200),
+    Highlight = Color3.fromRGB(85, 170, 255)
+}
+local UIThemes = {
+    Dark = {
+        Background = Color3.fromRGB(20, 20, 20),
+        Secondary = Color3.fromRGB(30, 30, 30),
+        Accent = Color3.fromRGB(40, 40, 40),
+        TextPrimary = Color3.fromRGB(255, 255, 255),
+        TextSecondary = Color3.fromRGB(200, 200, 200),
+        Highlight = Color3.fromRGB(85, 170, 255)
+    },
+    Light = {
+        Background = Color3.fromRGB(245, 245, 245),
+        Secondary = Color3.fromRGB(230, 230, 230),
+        Accent = Color3.fromRGB(210, 210, 210),
+        TextPrimary = Color3.fromRGB(40, 40, 40),
+        TextSecondary = Color3.fromRGB(80, 80, 80),
+        Highlight = Color3.fromRGB(0, 120, 215)
+    },
+    Purple = {
+        Background = Color3.fromRGB(30, 25, 40),
+        Secondary = Color3.fromRGB(40, 35, 50),
+        Accent = Color3.fromRGB(50, 45, 65),
+        TextPrimary = Color3.fromRGB(255, 255, 255),
+        TextSecondary = Color3.fromRGB(200, 200, 200),
+        Highlight = Color3.fromRGB(170, 85, 255)
+    },
+    Cyan = {
+        Background = Color3.fromRGB(20, 30, 40),
+        Secondary = Color3.fromRGB(30, 40, 50),
+        Accent = Color3.fromRGB(40, 50, 65),
+        TextPrimary = Color3.fromRGB(255, 255, 255),
+        TextSecondary = Color3.fromRGB(200, 200, 200),
+        Highlight = Color3.fromRGB(85, 200, 255)
+    },
+    Red = {
+        Background = Color3.fromRGB(40, 20, 20),
+        Secondary = Color3.fromRGB(50, 30, 30),
+        Accent = Color3.fromRGB(65, 40, 40),
+        TextPrimary = Color3.fromRGB(255, 255, 255),
+        TextSecondary = Color3.fromRGB(200, 200, 200),
+        Highlight = Color3.fromRGB(255, 85, 85)
+    },
+    Green = {
+        Background = Color3.fromRGB(20, 40, 20),
+        Secondary = Color3.fromRGB(30, 50, 30),
+        Accent = Color3.fromRGB(40, 65, 40),
+        TextPrimary = Color3.fromRGB(255, 255, 255),
+        TextSecondary = Color3.fromRGB(200, 200, 200),
+        Highlight = Color3.fromRGB(85, 255, 85)
+    }
+}
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 450, 0, 350)
+MainFrame.Position = UDim2.new(0.5, -225, 0.5, -175)
+MainFrame.BackgroundColor3 = UITheme.Background
+MainFrame.BorderSizePixel = 0
+MainFrame.ClipsDescendants = true
+MainFrame.Visible = false
+MainFrame.Parent = MainUI
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 10)
+UICorner.Parent = MainFrame
+
+local DropShadow = Instance.new("ImageLabel")
+DropShadow.Name = "DropShadow"
+DropShadow.AnchorPoint = Vector2.new(0.5, 0.5)
+DropShadow.BackgroundTransparency = 1
+DropShadow.Position = UDim2.new(0.5, 0, 0.5, 0)
+DropShadow.Size = UDim2.new(1, 30, 1, 30)
+DropShadow.ZIndex = -1
+DropShadow.Image = "rbxassetid://6014261993"
+DropShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+DropShadow.ImageTransparency = 0.6
+DropShadow.ScaleType = Enum.ScaleType.Slice
+DropShadow.SliceCenter = Rect.new(49, 49, 450, 450)
+DropShadow.Parent = MainFrame
+
+local TitleBar = Instance.new("Frame")
+TitleBar.Name = "TitleBar"
+TitleBar.Size = UDim2.new(1, 0, 0, 40)
+TitleBar.Position = UDim2.new(0, 0, 0, 0)
+TitleBar.BackgroundColor3 = UITheme.Secondary
+TitleBar.BorderSizePixel = 0
+TitleBar.Parent = MainFrame
+
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 10)
+TitleCorner.Parent = TitleBar
+
+local TitleBottomFrame = Instance.new("Frame")
+TitleBottomFrame.Name = "TitleBottomFrame"
+TitleBottomFrame.Size = UDim2.new(1, 0, 0, 15)
+TitleBottomFrame.Position = UDim2.new(0, 0, 0.7, 0)
+TitleBottomFrame.BackgroundColor3 = UITheme.Secondary
+TitleBottomFrame.BorderSizePixel = 0
+TitleBottomFrame.Parent = TitleBar
+
+local TitleIcon = Instance.new("ImageButton")
+TitleIcon.Name = "TitleIcon"
+TitleIcon.Size = UDim2.new(0, 24, 0, 24)
+TitleIcon.Position = UDim2.new(0, 15, 0, 8)
+TitleIcon.BackgroundTransparency = 1
+TitleIcon.Image = "rbxassetid://7733960981"
+TitleIcon.ImageColor3 = UITheme.TextPrimary
+TitleIcon.Parent = TitleBar
+
+local Title = Instance.new("TextLabel")
+Title.Name = "Title"
+Title.Size = UDim2.new(1, -120, 1, 0)
+Title.Position = UDim2.new(0, 50, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "Goose's Awesome Admin"
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 18
+Title.TextColor3 = UITheme.TextPrimary
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.TextTruncate = Enum.TextTruncate.AtEnd
+Title.Parent = TitleBar
+
+local CloseButton = Instance.new("ImageButton")
+CloseButton.Name = "CloseButton"
+CloseButton.Size = UDim2.new(0, 24, 0, 24)
+CloseButton.Position = UDim2.new(1, -35, 0, 8)
+CloseButton.BackgroundTransparency = 1
+CloseButton.Image = "rbxassetid://9113926153"
+CloseButton.ImageColor3 = UITheme.TextPrimary
+CloseButton.Parent = TitleBar
+
+local SettingsButton = Instance.new("ImageButton")
+SettingsButton.Name = "SettingsButton"
+SettingsButton.Size = UDim2.new(0, 24, 0, 24)
+SettingsButton.Position = UDim2.new(1, -65, 0, 8)
+SettingsButton.BackgroundTransparency = 1
+SettingsButton.Image = "rbxassetid://3926307971"
+SettingsButton.ImageRectOffset = Vector2.new(324, 124)
+SettingsButton.ImageRectSize = Vector2.new(36, 36)
+SettingsButton.ImageColor3 = UITheme.TextPrimary
+SettingsButton.Parent = TitleBar
+
+local SettingsRipple = Instance.new("Frame")
+SettingsRipple.Name = "SettingsRipple"
+SettingsRipple.AnchorPoint = Vector2.new(0.5, 0.5)
+SettingsRipple.Position = UDim2.new(0.5, 0, 0.5, 0)
+SettingsRipple.Size = UDim2.new(0, 0, 0, 0)
+SettingsRipple.BackgroundColor3 = UITheme.TextPrimary
+SettingsRipple.BackgroundTransparency = 0.8
+SettingsRipple.BorderSizePixel = 0
+SettingsRipple.ZIndex = 2
+SettingsRipple.Visible = false
+SettingsRipple.Parent = SettingsButton
+
+local RippleCorner = Instance.new("UICorner")
+RippleCorner.CornerRadius = UDim.new(1, 0)
+RippleCorner.Parent = SettingsRipple
+
+local MainContent = Instance.new("Frame")
+MainContent.Name = "MainContent"
+MainContent.Size = UDim2.new(1, 0, 1, -40)
+MainContent.Position = UDim2.new(0, 0, 0, 40)
+MainContent.BackgroundTransparency = 1
+MainContent.BorderSizePixel = 0
+MainContent.Parent = MainFrame
+
+local CommandBox = Instance.new("TextBox")
+CommandBox.Name = "CommandBox"
+CommandBox.Size = UDim2.new(1, -30, 0, 45)
+CommandBox.Position = UDim2.new(0, 15, 0, 15)
+CommandBox.BackgroundColor3 = UITheme.Accent
+CommandBox.BorderSizePixel = 0
+CommandBox.Font = Enum.Font.Gotham
+CommandBox.TextSize = 16
+CommandBox.TextColor3 = UITheme.TextPrimary
+CommandBox.PlaceholderText = "Enter command here... (type 'cmds' for list)"
+CommandBox.PlaceholderColor3 = Color3.fromRGB(180, 180, 180)
+CommandBox.Text = ""
+CommandBox.ClearTextOnFocus = false
+CommandBox.Parent = MainContent
+
+local CommandBoxCorner = Instance.new("UICorner")
+CommandBoxCorner.CornerRadius = UDim.new(0, 8)
+CommandBoxCorner.Parent = CommandBox
+
+local CommandIcon = Instance.new("ImageLabel")
+CommandIcon.Name = "CommandIcon"
+CommandIcon.Size = UDim2.new(0, 20, 0, 20)
+CommandIcon.Position = UDim2.new(0, 15, 0.5, -10)
+CommandIcon.BackgroundTransparency = 1
+CommandIcon.Image = "rbxassetid://8997386535"
+CommandIcon.ImageColor3 = Color3.fromRGB(180, 180, 180)
+CommandIcon.Parent = CommandBox
+
+local CommandBoxPadding = Instance.new("UIPadding")
+CommandBoxPadding.PaddingLeft = UDim.new(0, 45)
+CommandBoxPadding.Parent = CommandBox
+
+local SuggestionFrame = Instance.new("Frame")
+SuggestionFrame.Name = "SuggestionFrame"
+SuggestionFrame.Size = UDim2.new(1, -30, 0, 100)
+SuggestionFrame.Position = UDim2.new(0, 15, 0, 65)
+SuggestionFrame.BackgroundColor3 = UITheme.Secondary
+SuggestionFrame.BorderSizePixel = 0
+SuggestionFrame.Visible = false
+SuggestionFrame.Parent = MainContent
+
+local SuggestionCorner = Instance.new("UICorner")
+SuggestionCorner.CornerRadius = UDim.new(0, 8)
+SuggestionCorner.Parent = SuggestionFrame
+
+local SuggestionList = Instance.new("UIListLayout")
+SuggestionList.SortOrder = Enum.SortOrder.LayoutOrder
+SuggestionList.Padding = UDim.new(0, 5)
+SuggestionList.Parent = SuggestionFrame
+
+local SuggestionPadding = Instance.new("UIPadding")
+SuggestionPadding.PaddingTop = UDim.new(0, 5)
+SuggestionPadding.PaddingLeft = UDim.new(0, 5)
+SuggestionPadding.PaddingRight = UDim.new(0, 5)
+SuggestionPadding.Parent = SuggestionFrame
+
+local ConsoleFrame = Instance.new("Frame")
+ConsoleFrame.Name = "ConsoleFrame"
+ConsoleFrame.Size = UDim2.new(1, -30, 1, -125)
+ConsoleFrame.Position = UDim2.new(0, 15, 0, 125)
+ConsoleFrame.BackgroundColor3 = UITheme.Secondary
+ConsoleFrame.BorderSizePixel = 0
+ConsoleFrame.Parent = MainContent
+
+local ConsoleCorner = Instance.new("UICorner")
+ConsoleCorner.CornerRadius = UDim.new(0, 8)
+ConsoleCorner.Parent = ConsoleFrame
+
+local ConsoleLabel = Instance.new("TextLabel")
+ConsoleLabel.Name = "ConsoleLabel"
+ConsoleLabel.Size = UDim2.new(1, -20, 0, 30)
+ConsoleLabel.Position = UDim2.new(0, 10, 0, 5)
+ConsoleLabel.BackgroundTransparency = 1
+ConsoleLabel.Text = "Console Output"
+ConsoleLabel.Font = Enum.Font.GothamSemibold
+ConsoleLabel.TextSize = 14
+ConsoleLabel.TextColor3 = UITheme.TextSecondary
+ConsoleLabel.TextXAlignment = Enum.TextXAlignment.Left
+ConsoleLabel.Parent = ConsoleFrame
+
+local Console = Instance.new("ScrollingFrame")
+Console.Name = "Console"
+Console.Size = UDim2.new(1, -20, 1, -45)
+Console.Position = UDim2.new(0, 10, 0, 35)
+Console.BackgroundTransparency = 1
+Console.BorderSizePixel = 0
+Console.ScrollBarThickness = 4
+Console.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
+Console.CanvasSize = UDim2.new(0, 0, 0, 0)
+Console.AutomaticCanvasSize = Enum.AutomaticSize.Y
+Console.Parent = ConsoleFrame
+
+local ConsoleList = Instance.new("UIListLayout")
+ConsoleList.SortOrder = Enum.SortOrder.LayoutOrder
+ConsoleList.Padding = UDim.new(0, 8)
+ConsoleList.Parent = Console
+
+local ConsolePadding = Instance.new("UIPadding")
+ConsolePadding.PaddingTop = UDim.new(0, 5)
+ConsolePadding.PaddingBottom = UDim.new(0, 5)
+ConsolePadding.Parent = Console
+
+local ConsoleTemplate = Instance.new("TextLabel")
+ConsoleTemplate.Name = "ConsoleTemplate"
+ConsoleTemplate.Size = UDim2.new(1, -10, 0, 0)
+ConsoleTemplate.BackgroundTransparency = 1
+ConsoleTemplate.Font = Enum.Font.Gotham
+ConsoleTemplate.TextSize = 14
+ConsoleTemplate.TextColor3 = UITheme.TextPrimary
+ConsoleTemplate.TextWrapped = true
+ConsoleTemplate.TextXAlignment = Enum.TextXAlignment.Left
+ConsoleTemplate.TextYAlignment = Enum.TextYAlignment.Top
+ConsoleTemplate.AutomaticSize = Enum.AutomaticSize.Y
+ConsoleTemplate.Parent = nil
+
+local SettingsPage = Instance.new("Frame")
+SettingsPage.Name = "SettingsPage"
+SettingsPage.Size = UDim2.new(1, 0, 1, -40)
+SettingsPage.Position = UDim2.new(1, 0, 0, 40)
+SettingsPage.BackgroundTransparency = 1
+SettingsPage.BorderSizePixel = 0
+SettingsPage.Parent = MainFrame
+
+local SettingsTitle = Instance.new("TextLabel")
+SettingsTitle.Name = "SettingsTitle"
+SettingsTitle.Size = UDim2.new(1, -40, 0, 30)
+SettingsTitle.Position = UDim2.new(0, 20, 0, 10)
+SettingsTitle.BackgroundTransparency = 1
+SettingsTitle.Text = "Settings"
+SettingsTitle.Font = Enum.Font.GothamBold
+SettingsTitle.TextSize = 18
+SettingsTitle.TextColor3 = UITheme.TextPrimary
+SettingsTitle.TextXAlignment = Enum.TextXAlignment.Left
+SettingsTitle.Parent = SettingsPage
+
+local BackButton = Instance.new("ImageButton")
+BackButton.Name = "BackButton"
+BackButton.Size = UDim2.new(0, 26, 0, 26)
+BackButton.Position = UDim2.new(1, -46, 0, 10)
+BackButton.BackgroundTransparency = 1
+BackButton.Image = "rbxassetid://9111705255"
+BackButton.ImageColor3 = UITheme.TextPrimary
+BackButton.Parent = SettingsPage
+
+local SettingsContainer = Instance.new("ScrollingFrame")
+SettingsContainer.Name = "SettingsContainer"
+SettingsContainer.Size = UDim2.new(1, -40, 1, -60)
+SettingsContainer.Position = UDim2.new(0, 20, 0, 50)
+SettingsContainer.BackgroundTransparency = 1
+SettingsContainer.BorderSizePixel = 0
+SettingsContainer.ScrollBarThickness = 4
+SettingsContainer.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
+SettingsContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
+SettingsContainer.AutomaticCanvasSize = Enum.AutomaticSize.Y
+SettingsContainer.Parent = SettingsPage
+
+local SettingsList = Instance.new("UIListLayout")
+SettingsList.SortOrder = Enum.SortOrder.LayoutOrder
+SettingsList.Padding = UDim.new(0, 15)
+SettingsList.Parent = SettingsContainer
+
+local NotificationFrame = Instance.new("Frame")
+NotificationFrame.Name = "NotificationFrame"
+NotificationFrame.Size = UDim2.new(0, 300, 0, 80)
+NotificationFrame.Position = UDim2.new(1, -320, 1, -100)
+NotificationFrame.BackgroundColor3 = UITheme.Background
+NotificationFrame.BorderSizePixel = 0
+NotificationFrame.Visible = false
+NotificationFrame.Parent = MainUI
+
+local NotificationCorner = Instance.new("UICorner")
+NotificationCorner.CornerRadius = UDim.new(0, 8)
+NotificationCorner.Parent = NotificationFrame
+
+local NotificationTitle = Instance.new("TextLabel")
+NotificationTitle.Name = "Title"
+NotificationTitle.Size = UDim2.new(1, -20, 0, 20)
+NotificationTitle.Position = UDim2.new(0, 10, 0, 10)
+NotificationTitle.BackgroundTransparency = 1
+NotificationTitle.Text = "Notification"
+NotificationTitle.Font = Enum.Font.GothamBold
+NotificationTitle.TextSize = 16
+NotificationTitle.TextColor3 = UITheme.TextPrimary
+NotificationTitle.TextXAlignment = Enum.TextXAlignment.Left
+NotificationTitle.Parent = NotificationFrame
+
+local NotificationText = Instance.new("TextLabel")
+NotificationText.Name = "Text"
+NotificationText.Size = UDim2.new(1, -20, 0, 40)
+NotificationText.Position = UDim2.new(0, 10, 0, 30)
+NotificationText.BackgroundTransparency = 1
+NotificationText.Text = ""
+NotificationText.Font = Enum.Font.Gotham
+NotificationText.TextSize = 14
+NotificationText.TextColor3 = UITheme.TextSecondary
+NotificationText.TextWrapped = true
+NotificationText.TextXAlignment = Enum.TextXAlignment.Left
+NotificationText.Parent = NotificationFrame
+
+local function CreateSettingToggle(title, description, defaultValue)
+    local SettingToggle = Instance.new("Frame")
+    SettingToggle.Name = title .. "Toggle"
+    SettingToggle.Size = UDim2.new(1, 0, 0, 70)
+    SettingToggle.BackgroundColor3 = UITheme.Secondary
+    SettingToggle.BorderSizePixel = 0
+    SettingToggle.Parent = SettingsContainer
+    
+    local ToggleCorner = Instance.new("UICorner")
+    ToggleCorner.CornerRadius = UDim.new(0, 8)
+    ToggleCorner.Parent = SettingToggle
+    
+    local ToggleTitle = Instance.new("TextLabel")
+    ToggleTitle.Name = "Title"
+    ToggleTitle.Size = UDim2.new(1, -80, 0, 20)
+    ToggleTitle.Position = UDim2.new(0, 15, 0, 10)
+    ToggleTitle.BackgroundTransparency = 1
+    ToggleTitle.Text = title
+    ToggleTitle.Font = Enum.Font.GothamSemibold
+    ToggleTitle.TextSize = 16
+    ToggleTitle.TextColor3 = UITheme.TextPrimary
+    ToggleTitle.TextXAlignment = Enum.TextXAlignment.Left
+    ToggleTitle.Parent = SettingToggle
+    
+    local ToggleDescription = Instance.new("TextLabel")
+    ToggleDescription.Name = "Description"
+    ToggleDescription.Size = UDim2.new(1, -80, 0, 30)
+    ToggleDescription.Position = UDim2.new(0, 15, 0, 30)
+    ToggleDescription.BackgroundTransparency = 1
+    ToggleDescription.Text = description
+    ToggleDescription.Font = Enum.Font.Gotham
+    ToggleDescription.TextSize = 14
+    ToggleDescription.TextColor3 = UITheme.TextSecondary
+    ToggleDescription.TextWrapped = true
+    ToggleDescription.TextXAlignment = Enum.TextXAlignment.Left
+    ToggleDescription.Parent = SettingToggle
+    
+    local ToggleButton = Instance.new("Frame")
+    ToggleButton.Name = "ToggleButton"
+    ToggleButton.Size = UDim2.new(0, 50, 0, 26)
+    ToggleButton.Position = UDim2.new(1, -65, 0.5, -13)
+    ToggleButton.BackgroundColor3 = defaultValue and UITheme.Highlight or Color3.fromRGB(100, 100, 100)
+    ToggleButton.BorderSizePixel = 0
+    ToggleButton.Parent = SettingToggle
+    
+    local ToggleButtonCorner = Instance.new("UICorner")
+    ToggleButtonCorner.CornerRadius = UDim.new(1, 0)
+    ToggleButtonCorner.Parent = ToggleButton
+    
+    local ToggleCircle = Instance.new("Frame")
+    ToggleCircle.Name = "Circle"
+    ToggleCircle.Size = UDim2.new(0, 20, 0, 20)
+    ToggleCircle.Position = defaultValue and UDim2.new(1, -23, 0.5, -10) or UDim2.new(0, 3, 0.5, -10)
+    ToggleCircle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    ToggleCircle.BorderSizePixel = 0
+    ToggleCircle.Parent = ToggleButton
+    
+    local ToggleCircleCorner = Instance.new("UICorner")
+    ToggleCircleCorner.CornerRadius = UDim.new(1, 0)
+    ToggleCircleCorner.Parent = ToggleCircle
+    
+    local ToggleClickDetector = Instance.new("TextButton")
+    ToggleClickDetector.Name = "ClickDetector"
+    ToggleClickDetector.Size = UDim2.new(1, 0, 1, 0)
+    ToggleClickDetector.BackgroundTransparency = 1
+    ToggleClickDetector.Text = ""
+    ToggleClickDetector.Parent = SettingToggle
+    
+    local IsToggled = defaultValue
+    
+    ToggleClickDetector.MouseButton1Click:Connect(function()
+        IsToggled = not IsToggled
+        
+        if title == "Show Notifications" then
+            ShowNotifications = IsToggled
+        elseif title == "UI Draggable" then
+            IsDraggable = IsToggled
+            MainFrame.Active = IsToggled
+            MainFrame.Draggable = IsToggled
+        end
+        
+        local targetPosition = IsToggled and UDim2.new(1, -23, 0.5, -10) or UDim2.new(0, 3, 0.5, -10)
+        local targetColor = IsToggled and UITheme.Highlight or Color3.fromRGB(100, 100, 100)
+        
+        local toggleTween = TweenService:Create(ToggleCircle, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
+            Position = targetPosition
+        })
+        local colorTween = TweenService:Create(ToggleButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
+            BackgroundColor3 = targetColor
+        })
+        
+        toggleTween:Play()
+        colorTween:Play()
+    end)
+    
+    return {
+        Frame = SettingToggle,
+        GetValue = function() return IsToggled end,
+        SetValue = function(value)
+            IsToggled = value
+            ToggleCircle.Position = IsToggled and UDim2.new(1, -23, 0.5, -10) or UDim2.new(0, 3, 0.5, -10)
+            ToggleButton.BackgroundColor3 = IsToggled and UITheme.Highlight or Color3.fromRGB(100, 100, 100)
+        end
+    }
+end
+
+local function CreateThemeSelector(title, description)
+    local ThemeSelector = Instance.new("Frame")
+    ThemeSelector.Name = title .. "Selector"
+    ThemeSelector.Size = UDim2.new(1, 0, 0, 140)
+    ThemeSelector.BackgroundColor3 = UITheme.Secondary
+    ThemeSelector.BorderSizePixel = 0
+    ThemeSelector.Parent = SettingsContainer
+    
+    local ThemeCorner = Instance.new("UICorner")
+    ThemeCorner.CornerRadius = UDim.new(0, 8)
+    ThemeCorner.Parent = ThemeSelector
+    
+    local ThemeTitle = Instance.new("TextLabel")
+    ThemeTitle.Name = "Title"
+    ThemeTitle.Size = UDim2.new(1, -30, 0, 20)
+    ThemeTitle.Position = UDim2.new(0, 15, 0, 10)
+    ThemeTitle.BackgroundTransparency = 1
+    ThemeTitle.Text = title
+    ThemeTitle.Font = Enum.Font.GothamSemibold
+    ThemeTitle.TextSize = 16
+    ThemeTitle.TextColor3 = UITheme.TextPrimary
+    ThemeTitle.TextXAlignment = Enum.TextXAlignment.Left
+    ThemeTitle.Parent = ThemeSelector
+    
+    local ThemeDescription = Instance.new("TextLabel")
+    ThemeDescription.Name = "Description"
+    ThemeDescription.Size = UDim2.new(1, -30, 0, 30)
+    ThemeDescription.Position = UDim2.new(0, 15, 0, 30)
+    ThemeDescription.BackgroundTransparency = 1
+    ThemeDescription.Text = description
+    ThemeDescription.Font = Enum.Font.Gotham
+    ThemeDescription.TextSize = 14
+    ThemeDescription.TextColor3 = UITheme.TextSecondary
+    ThemeDescription.TextWrapped = true
+    ThemeDescription.TextXAlignment = Enum.TextXAlignment.Left
+    ThemeDescription.Parent = ThemeSelector
+    
+    local ThemeContainer = Instance.new("Frame")
+    ThemeContainer.Name = "ThemeContainer"
+    ThemeContainer.Size = UDim2.new(1, -30, 0, 60)
+    ThemeContainer.Position = UDim2.new(0, 15, 0, 65)
+    ThemeContainer.BackgroundTransparency = 1
+    ThemeContainer.BorderSizePixel = 0
+    ThemeContainer.Parent = ThemeSelector
+    
+    local ThemeList = Instance.new("UIListLayout")
+    ThemeList.FillDirection = Enum.FillDirection.Horizontal
+    ThemeList.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    ThemeList.SortOrder = Enum.SortOrder.LayoutOrder
+    ThemeList.Padding = UDim.new(0, 15)
+    ThemeList.Parent = ThemeContainer
+    
+    local currentTheme = "Dark"
+    local themeButtons = {}
+    
+    for themeName, themeColors in pairs(UIThemes) do
+        local ThemeButton = Instance.new("Frame")
+        ThemeButton.Name = themeName .. "Button"
+        ThemeButton.Size = UDim2.new(0, 60, 0, 60)
+        ThemeButton.BackgroundColor3 = themeColors.Secondary
+        ThemeButton.BorderSizePixel = 0
+        ThemeButton.Parent = ThemeContainer
+        
+        local ThemeButtonCorner = Instance.new("UICorner")
+        ThemeButtonCorner.CornerRadius = UDim.new(0, 8)
+        ThemeButtonCorner.Parent = ThemeButton
+        
+        local ThemeButtonStroke = Instance.new("UIStroke")
+        ThemeButtonStroke.Color = themeName == currentTheme and UITheme.Highlight or Color3.fromRGB(100, 100, 100)
+        ThemeButtonStroke.Thickness = themeName == currentTheme and 3 or 0
+        ThemeButtonStroke.Parent = ThemeButton
+        
+        local ThemeAccent = Instance.new("Frame")
+        ThemeAccent.Name = "Accent"
+        ThemeAccent.Size = UDim2.new(0, 30, 0, 30)
+        ThemeAccent.Position = UDim2.new(0.5, -15, 0.5, -15)
+        ThemeAccent.BackgroundColor3 = themeColors.Highlight
+        ThemeAccent.BorderSizePixel = 0
+        ThemeAccent.Parent = ThemeButton
+        
+        local ThemeAccentCorner = Instance.new("UICorner")
+        ThemeAccentCorner.CornerRadius = UDim.new(1, 0)
+        ThemeAccentCorner.Parent = ThemeAccent
+        
+        local ThemeButtonClick = Instance.new("TextButton")
+        ThemeButtonClick.Name = "ClickDetector"
+        ThemeButtonClick.Size = UDim2.new(1, 0, 1, 0)
+        ThemeButtonClick.BackgroundTransparency = 1
+        ThemeButtonClick.Text = ""
+        ThemeButtonClick.Parent = ThemeButton
+        
+        ThemeButtonClick.MouseButton1Click:Connect(function()
+            for tName, tButton in pairs(themeButtons) do
+                tButton.Stroke.Thickness = tName == themeName and 3 or 0
+                tButton.Stroke.Color = tName == themeName and UITheme.Highlight or Color3.fromRGB(100, 100, 100)
+            end
+            
+            currentTheme = themeName
+            UITheme = UIThemes[themeName]
+            ApplyTheme()
+        end)
+        
+        themeButtons[themeName] = {
+            Button = ThemeButton,
+            Stroke = ThemeButtonStroke
+        }
+    end
+    
+    return {
+        Frame = ThemeSelector,
+        GetValue = function() return currentTheme end
+    }
+end
+
+local function CreateKeyBindButton(title, description, defaultKey)
+    local KeybindSelector = Instance.new("Frame")
+    KeybindSelector.Name = title .. "Selector"
+    KeybindSelector.Size = UDim2.new(1, 0, 0, 70)
+    KeybindSelector.BackgroundColor3 = UITheme.Secondary
+    KeybindSelector.BorderSizePixel = 0
+    KeybindSelector.Parent = SettingsContainer
+    
+    local KeybindCorner = Instance.new("UICorner")
+    KeybindCorner.CornerRadius = UDim.new(0, 8)
+    KeybindCorner.Parent = KeybindSelector
+    
+    local KeybindTitle = Instance.new("TextLabel")
+    KeybindTitle.Name = "Title"
+    KeybindTitle.Size = UDim2.new(1, -130, 0, 20)
+    KeybindTitle.Position = UDim2.new(0, 15, 0, 10)
+    KeybindTitle.BackgroundTransparency = 1
+    KeybindTitle.Text = title
+    KeybindTitle.Font = Enum.Font.GothamSemibold
+    KeybindTitle.TextSize = 16
+    KeybindTitle.TextColor3 = UITheme.TextPrimary
+    KeybindTitle.TextXAlignment = Enum.TextXAlignment.Left
+    KeybindTitle.Parent = KeybindSelector
+    
+    local KeybindDescription = Instance.new("TextLabel")
+    KeybindDescription.Name = "Description"
+    KeybindDescription.Size = UDim2.new(1, -130, 0, 30)
+    KeybindDescription.Position = UDim2.new(0, 15, 0, 30)
+    KeybindDescription.BackgroundTransparency = 1
+    KeybindDescription.Text = description
+    KeybindDescription.Font = Enum.Font.Gotham
+    KeybindDescription.TextSize = 14
+    KeybindDescription.TextColor3 = UITheme.TextSecondary
+    KeybindDescription.TextWrapped = true
+    KeybindDescription.TextXAlignment = Enum.TextXAlignment.Left
+    KeybindDescription.Parent = KeybindSelector
+    
+    local KeybindButton = Instance.new("TextButton")
+    KeybindButton.Name = "KeybindButton"
+    KeybindButton.Size = UDim2.new(0, 100, 0, 30)
+    KeybindButton.Position = UDim2.new(1, -115, 0.5, -15)
+    KeybindButton.BackgroundColor3 = UITheme.Accent
+    KeybindButton.BorderSizePixel = 0
+    KeybindButton.Text = defaultKey.Name
+    KeybindButton.Font = Enum.Font.Gotham
+    KeybindButton.TextSize = 14
+    KeybindButton.TextColor3 = UITheme.TextPrimary
+    KeybindButton.Parent = KeybindSelector
+    
+    local KeybindButtonCorner = Instance.new("UICorner")
+    KeybindButtonCorner.CornerRadius = UDim.new(0, 8)
+    KeybindButtonCorner.Parent = KeybindButton
+    
+    local currentKey = defaultKey
+    local selectingKey = false
+    
+    KeybindButton.MouseButton1Click:Connect(function()
+        selectingKey = true
+        KeybindButton.Text = "Press a key..."
+    end)
+    
+    UserInputService.InputBegan:Connect(function(input)
+        if selectingKey and input.UserInputType == Enum.UserInputType.Keyboard then
+            currentKey = input.KeyCode
+            KeybindButton.Text = currentKey.Name
+            selectingKey = false
+            if title == "UI Toggle Keybind" then
+                UIKeybind = currentKey
+            end
+        end
+    end)
+    
+    return {
+        Frame = KeybindSelector,
+        GetValue = function() return currentKey end
+    }
+end
+
+local function ApplyTheme()
+    MainFrame.BackgroundColor3 = UITheme.Background
+    TitleBar.BackgroundColor3 = UITheme.Secondary
+    TitleBottomFrame.BackgroundColor3 = UITheme.Secondary
+    TitleIcon.ImageColor3 = UITheme.TextPrimary
+    Title.TextColor3 = UITheme.TextPrimary
+    CloseButton.ImageColor3 = UITheme.TextPrimary
+    SettingsButton.ImageColor3 = UITheme.TextPrimary
+    SettingsRipple.BackgroundColor3 = UITheme.TextPrimary
+    CommandBox.BackgroundColor3 = UITheme.Accent
+    CommandBox.TextColor3 = UITheme.TextPrimary
+    ConsoleFrame.BackgroundColor3 = UITheme.Secondary
+    ConsoleLabel.TextColor3 = UITheme.TextSecondary
+    ConsoleTemplate.TextColor3 = UITheme.TextPrimary
+    SettingsTitle.TextColor3 = UITheme.TextPrimary
+    BackButton.ImageColor3 = UITheme.TextPrimary
+    NotificationFrame.BackgroundColor3 = UITheme.Background
+    NotificationTitle.TextColor3 = UITheme.TextPrimary
+    NotificationText.TextColor3 = UITheme.TextSecondary
+    SuggestionFrame.BackgroundColor3 = UITheme.Secondary
+    
+    for _, child in ipairs(SettingsContainer:GetChildren()) do
+        if child:IsA("Frame") then
+            child.BackgroundColor3 = UITheme.Secondary
+            for _, element in ipairs(child:GetChildren()) do
+                if element.Name == "Title" then
+                    element.TextColor3 = UITheme.TextPrimary
+                elseif element.Name == "Description" then
+                    element.TextColor3 = UITheme.TextSecondary
+                elseif element.Name == "KeybindButton" then
+                    element.BackgroundColor3 = UITheme.Accent
+                    element.TextColor3 = UITheme.TextPrimary
+                elseif element.Name == "ToggleButton" then
+                    element.BackgroundColor3 = element.Circle.Position.X.Offset > 0 and UITheme.Highlight or Color3.fromRGB(100, 100, 100)
+                elseif element.Name == "ThemeContainer" then
+                    for _, themeBtn in ipairs(element:GetChildren()) do
+                        if themeBtn:IsA("Frame") then
+                            themeBtn.BackgroundColor3 = UIThemes[themeBtn.Name:sub(1, -7)].Secondary
+                            themeBtn.Accent.BackgroundColor3 = UIThemes[themeBtn.Name:sub(1, -7)].Highlight
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
+local function ShowNotification(title, text)
+    if not ShowNotifications then return end
+    
+    NotificationFrame.Visible = true
+    NotificationTitle.Text = title
+    NotificationText.Text = text
+    
+    local tweenIn = TweenService:Create(NotificationFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        Position = UDim2.new(1, -320, 1, -100)
+    })
+    local tweenOut = TweenService:Create(NotificationFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+        Position = UDim2.new(1, -20, 1, -100)
+    })
+    
+    tweenIn:Play()
+    task.delay(3, function()
+        tweenOut:Play()
+        tweenOut.Completed:Connect(function()
+            NotificationFrame.Visible = false
+        end)
+    end)
+end
+
+local function AddConsoleMessage(message, color)
+    local newMessage = ConsoleTemplate:Clone()
+    newMessage.Text = message
+    newMessage.TextColor3 = color or UITheme.TextPrimary
+    newMessage.Parent = Console
+    Console.CanvasPosition = Vector2.new(0, Console.CanvasSize.Y.Offset)
+end
+
+local FlyConnection
+local function ToggleFly(player, enable, speed)
+    if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then
+        return false
+    end
+
+    if enable then
+        local bodyVelocity = Instance.new("BodyVelocity")
+        bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+        bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+        bodyVelocity.Parent = player.Character.HumanoidRootPart
+
+        local bodyGyro = Instance.new("BodyGyro")
+        bodyGyro.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+        bodyGyro.P = 10000
+        bodyGyro.D = 1000
+        bodyGyro.Parent = player.Character.HumanoidRootPart
+
+        FlyConnection = RunService.RenderStepped:Connect(function()
+            local cam = workspace.CurrentCamera
+            local moveDirection = Vector3.new(0, 0, 0)
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                moveDirection = moveDirection + cam.CFrame.LookVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                moveDirection = moveDirection - cam.CFrame.LookVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                moveDirection = moveDirection + cam.CFrame.RightVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                moveDirection = moveDirection - cam.CFrame.RightVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                moveDirection = moveDirection + Vector3.new(0, 1, 0)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+                moveDirection = moveDirection - Vector3.new(0, 1, 0)
+            end
+
+            bodyVelocity.Velocity = moveDirection * (speed or 50)
+            bodyGyro.CFrame = cam.CFrame
+        end)
+
+        player.Character.Humanoid.PlatformStand = true
+        return true
+    else
+        if FlyConnection then
+            FlyConnection:Disconnect()
+            FlyConnection = nil
+        end
+        if player.Character.HumanoidRootPart:FindFirstChild("BodyVelocity") then
+            player.Character.HumanoidRootPart.BodyVelocity:Destroy()
+        end
+        if player.Character.HumanoidRootPart:FindFirstChild("BodyGyro") then
+            player.Character.HumanoidRootPart.BodyGyro:Destroy()
+        end
+        player.Character.Humanoid.PlatformStand = false
+        return false
+    end
+end
+
+local NoclipConnection
+local function ToggleNoclip(player, enable)
+    if not player.Character then
+        return false
+    end
+
+    if enable then
+        NoclipConnection = RunService.Stepped:Connect(function()
+            for _, part in ipairs(player.Character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
+            end
+        end)
+        return true
+    else
+        if NoclipConnection then
+            NoclipConnection:Disconnect()
+            NoclipConnection = nil
+        end
+        for _, part in ipairs(player.Character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = true
+            end
+        end
+        return false
+    end
+end
+
+local Commands = {
+    ["cmds"] = function()
+        local commandList = "Available commands:\n"
+        for cmd, _ in pairs(Commands) do
+            commandList = commandList .. cmd .. "\n"
+        end
+        AddConsoleMessage(commandList, UITheme.Highlight)
+    end,
+    ["fly"] = function(args)
+        local target = args[1] or LocalPlayer.Name
+        local speed = tonumber(args[2]) or 50
+        local player = Players:FindFirstChild(target)
+        if player and player.Character then
+            if ToggleFly(player, true, speed) then
+                AddConsoleMessage("Enabled fly for " .. target .. " at speed " .. speed, UITheme.Highlight)
+            else
+                AddConsoleMessage("Failed to enable fly for " .. target, Color3.fromRGB(255, 100, 100))
+            end
+        else
+            AddConsoleMessage("Player " .. target .. " not found", Color3.fromRGB(255, 100, 100))
+        end
+    end,
+    ["unfly"] = function(args)
+        local target = args[1] or LocalPlayer.Name
+        local player = Players:FindFirstChild(target)
+        if player and player.Character then
+            if ToggleFly(player, false) then
+                AddConsoleMessage("Disabled fly for " .. target, UITheme.Highlight)
+            else
+                AddConsoleMessage("Failed to disable fly for " .. target, Color3.fromRGB(255, 100, 100))
+            end
+        else
+            AddConsoleMessage("Player " .. target .. " not found", Color3.fromRGB(255, 100, 100))
+        end
+    end,
+    ["noclip"] = function(args)
+        local target = args[1] or LocalPlayer.Name
+        local player = Players:FindFirstChild(target)
+        if player and player.Character then
+            if ToggleNoclip(player, true) then
+                AddConsoleMessage("Enabled noclip for " .. target, UITheme.Highlight)
+            else
+                AddConsoleMessage("Failed to enable noclip for " .. target, Color3.fromRGB(255, 100, 100))
+            end
+        else
+            AddConsoleMessage("Player " .. target .. " not found", Color3.fromRGB(255, 100, 100))
+        end
+    end,
+    ["clip"] = function(args)
+        local target = args[1] or LocalPlayer.Name
+        local player = Players:FindFirstChild(target)
+        if player and player.Character then
+            if ToggleNoclip(player, false) then
+                AddConsoleMessage("Disabled noclip for " .. target, UITheme.Highlight)
+            else
+                AddConsoleMessage("Failed to disable noclip for " .. target, Color3.fromRGB(255, 100, 100))
+            end
+        else
+            AddConsoleMessage("Player " .. target .. " not found", Color3.fromRGB(255, 100, 100))
+        end
+    end,
+    ["goto"] = function(args)
+        local target = args[1]
+        local player = Players:FindFirstChild(target)
+        if player and player.Character and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            LocalPlayer.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame
+            AddConsoleMessage("Teleported to " .. target, UITheme.Highlight)
+        else
+            AddConsoleMessage("Player " .. target .. " not found", Color3.fromRGB(255, 100, 100))
+        end
+    end,
+    ["bring"] = function(args)
+        local target = args[1]
+        local player = Players:FindFirstChild(target)
+        if player and player.Character and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+            AddConsoleMessage("Brought " .. target .. " to you", UITheme.Highlight)
+        else
+            AddConsoleMessage("Player " .. target .. " not found", Color3.fromRGB(255, 100, 100))
+        end
+    end,
+    ["speed"] = function(args)
+        local target = args[1] or LocalPlayer.Name
+        local speed = tonumber(args[2]) or 16
+        local player = Players:FindFirstChild(target)
+        if player and player.Character then
+            player.Character.Humanoid.WalkSpeed = speed
+            AddConsoleMessage("Set " .. target .. "'s speed to " .. speed, UITheme.Highlight)
+        else
+            AddConsoleMessage("Player " .. target .. " not found", Color3.fromRGB(255, 100, 100))
+        end
+    end,
+    ["jump"] = function(args)
+        local target = args[1] or LocalPlayer.Name
+        local power = tonumber(args[2]) or 50
+        local player = Players:FindFirstChild(target)
+        if player and player.Character then
+            player.Character.Humanoid.JumpPower = power
+            AddConsoleMessage("Set " .. target .. "'s jump power to " .. power, UITheme.Highlight)
+        else
+            AddConsoleMessage("Player " .. target .. " not found", Color3.fromRGB(255, 100, 100))
+        end
+    end,
+    ["sit"] = function(args)
+        local target = args[1] or LocalPlayer.Name
+        local player = Players:FindFirstChild(target)
+        if player and player.Character then
+            player.Character.Humanoid.Sit = true
+            AddConsoleMessage("Made " .. target .. " sit", UITheme.Highlight)
+        else
+            AddConsoleMessage("Player " .. target .. " not found", Color3.fromRGB(255, 100, 100))
+        end
+    end,
+    ["rejoin"] = function()
+        TeleportService:Teleport(game.PlaceId, LocalPlayer)
+        AddConsoleMessage("Rejoining server...", UITheme.Highlight)
+    end,
+    ["respawn"] = function(args)
+        local target = args[1] or LocalPlayer.Name
+        local player = Players:FindFirstChild(target)
+        if player then
+            player:LoadCharacter()
+            AddConsoleMessage("Respawned " .. target, UITheme.Highlight)
+        else
+            AddConsoleMessage("Player " .. target .. " not found", Color3.fromRGB(255, 100, 100))
+        end
+    end,
+    ["invisible"] = function(args)
+        local target = args[1] or LocalPlayer.Name
+        local player = Players:FindFirstChild(target)
+        if player and player.Character then
+            for _, part in ipairs(player.Character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.Transparency = 1
+                elseif part:IsA("Decal") then
+                    part.Transparency = 1
+                end
+            end
+            AddConsoleMessage("Made " .. target .. " invisible", UITheme.Highlight)
+        else
+            AddConsoleMessage("Player " .. target .. " not found", Color3.fromRGB(255, 100, 100))
+        end
+    end,
+    ["visible"] = function(args)
+        local target = args[1] or LocalPlayer.Name
+        local player = Players:FindFirstChild(target)
+        if player and player.Character then
+            for _, part in ipairs(player.Character:GetDescendants()) do
+                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                    part.Transparency = 0
+                elseif part:IsA("Decal") then
+                    part.Transparency = 0
+                end
+            end
+            AddConsoleMessage("Made " .. target .. " visible", UITheme.Highlight)
+        else
+            AddConsoleMessage("Player " .. target .. " not found", Color3.fromRGB(255, 100, 100))
+        end
+    end
+}
+
+local NotificationToggle = CreateSettingToggle("Show Notifications", "Enable or disable notification popups", true)
+local DraggableToggle = CreateSettingToggle("UI Draggable", "Allow dragging the UI window", false)
+local ThemeSelector = CreateThemeSelector("Theme Selector", "Choose the UI color theme")
+local KeybindSelector = CreateKeyBindButton("UI Toggle Keybind", "Key to toggle the UI", UIKeybind)
+
+local function UpdateSuggestions(input)
+    for _, child in ipairs(SuggestionFrame:GetChildren()) do
+        if child:IsA("TextButton") then
+            child:Destroy()
+        end
+    end
+
+    if input == "" then
+        SuggestionFrame.Visible = false
+        return
+    end
+
+    local suggestions = {}
+    for cmd, _ in pairs(Commands) do
+        if cmd:lower():sub(1, #input) == input:lower() then
+            table.insert(suggestions, cmd)
+        end
+    end
+
+    if #suggestions > 0 then
+        SuggestionFrame.Visible = true
+        for _, cmd in ipairs(suggestions) do
+            local suggestionButton = Instance.new("TextButton")
+            suggestionButton.Size = UDim2.new(1, 0, 0, 30)
+            suggestionButton.BackgroundColor3 = UITheme.Accent
+            suggestionButton.BorderSizePixel = 0
+            suggestionButton.Text = cmd
+            suggestionButton.Font = Enum.Font.Gotham
+            suggestionButton.TextSize = 14
+            suggestionButton.TextColor3 = UITheme.TextPrimary
+            suggestionButton.Parent = SuggestionFrame
+
+            local suggestionCorner = Instance.new("UICorner")
+            suggestionCorner.CornerRadius = UDim.new(0, 8)
+            suggestionCorner.Parent = suggestionButton
+
+            suggestionButton.MouseButton1Click:Connect(function()
+                CommandBox.Text = cmd .. " "
+                CommandBox:CaptureFocus()
+                SuggestionFrame.Visible = false
+            end)
+        end
+    else
+        SuggestionFrame.Visible = false
+    end
+end
+
+CommandBox:GetPropertyChangedSignal("Text"):Connect(function()
+    UpdateSuggestions(CommandBox.Text)
+end)
+
+CommandBox.Focused:Connect(function()
+    UpdateSuggestions(CommandBox.Text)
+end)
+
+CommandBox.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        local input = CommandBox.Text
+        CommandBox.Text = ""
+        AddConsoleMessage("> " .. input, UITheme.TextSecondary)
+        SuggestionFrame.Visible = false
+        
+        local args = {}
+        for word in input:gmatch("%S+") do
+            table.insert(args, word)
+        end
+        
+        local command = table.remove(args, 1)
+        if command and Commands[command:lower()] then
+            pcall(function()
+                Commands[command:lower()](args)
+            end)
+        else
+            AddConsoleMessage("Unknown command: " .. (command or ""), Color3.fromRGB(255, 100, 100))
+        end
+    end
+end)
+
+TitleIcon.MouseButton1Click:Connect(function()
+    local mainTween = TweenService:Create(MainContent, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
+        Position = UDim2.new(0, 0, 0, 40)
+    })
+    local settingsTween = TweenService:Create(SettingsPage, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
+        Position = UDim2.new(1, 0, 0, 40)
+    })
+    mainTween:Play()
+    settingsTween:Play()
+    ShowNotification("Returned to Console", "Enter your commands below")
+end)
+
+CloseButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+    ShowNotification("UI Closed", "Press " .. UIKeybind.Name .. " to reopen")
+end)
+
+SettingsButton.MouseButton1Click:Connect(function()
+    local rippleTween = TweenService:Create(SettingsRipple, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0, 48, 0, 48),
+        BackgroundTransparency = 1
+    })
+    SettingsRipple.Visible = true
+    rippleTween:Play()
+    rippleTween.Completed:Connect(function()
+        SettingsRipple.Visible = false
+        SettingsRipple.Size = UDim2.new(0, 0, 0, 0)
+        SettingsRipple.BackgroundTransparency = 0.8
+    end)
+    
+    local mainTween = TweenService:Create(MainContent, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
+        Position = UDim2.new(-1, 0, 0, 40)
+    })
+    local settingsTween = TweenService:Create(SettingsPage, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
+        Position = UDim2.new(0, 0, 0, 40)
+    })
+    mainTween:Play()
+    settingsTween:Play()
+end)
+
+BackButton.MouseButton1Click:Connect(function()
+    local mainTween = TweenService:Create(MainContent, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
+        Position = UDim2.new(0, 0, 0, 40)
+    })
+    local settingsTween = TweenService:Create(SettingsPage, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
+        Position = UDim2.new(1, 0, 0, 40)
+    })
+    mainTween:Play()
+    settingsTween:Play()
+end)
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == UIKeybind then
+        MainFrame.Visible = not MainFrame.Visible
+        if MainFrame.Visible then
+            ShowNotification("UI Opened", "Goose's Awesome Admin is now active")
+        end
+    end
+end)
+
+ShowNotification("Admin Loaded", "Press " .. UIKeybind.Name .. " to toggle the UI")
+-- Mobile Toggle Button
+if UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled then
+    local MobileToggle = Instance.new("ImageButton")
+    MobileToggle.Name = "MobileToggle"
+    MobileToggle.Size = UDim2.new(0, 50, 0, 50)
+    MobileToggle.Position = UDim2.new(0, 20, 1, -70)
+    MobileToggle.AnchorPoint = Vector2.new(0, 1)
+    MobileToggle.BackgroundColor3 = UITheme.Highlight
+    MobileToggle.Image = "rbxassetid://7733960981" -- simple gear icon
+    MobileToggle.ImageColor3 = Color3.fromRGB(255, 255, 255)
+    MobileToggle.BorderSizePixel = 0
+    MobileToggle.Parent = MainUI
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(1, 0)
+    corner.Parent = MobileToggle
+
+    -- Drop shadow for better visibility
+    local shadow = Instance.new("ImageLabel")
+    shadow.Name = "Shadow"
+    shadow.AnchorPoint = Vector2.new(0.5, 0.5)
+    shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
+    shadow.Size = UDim2.new(1, 10, 1, 10)
+    shadow.BackgroundTransparency = 1
+    shadow.Image = "rbxassetid://6014261993"
+    shadow.ImageTransparency = 0.6
+    shadow.ScaleType = Enum.ScaleType.Slice
+    shadow.SliceCenter = Rect.new(49, 49, 450, 450)
+    shadow.ZIndex = -1
+    shadow.Parent = MobileToggle
+
+    -- Toggle visibility
+    local toggled = false
+    MobileToggle.MouseButton1Click:Connect(function()
+        toggled = not toggled
+        MainFrame.Visible = toggled
+        TweenService:Create(MobileToggle, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
+            BackgroundColor3 = toggled and UITheme.Accent or UITheme.Highlight
+        }):Play()
+    end)
+end
+
+
+return GoosesAwesomeAdmin
